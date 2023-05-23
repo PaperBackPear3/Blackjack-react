@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  app:
+    container_name: "app"
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./app:/home/node/app:ro
+  # api:
+  #   image: "node:latest"
+  #   ports:
+  #     - "3001:3000"
+  #   volumes:
+  #     - ./api:/home/node/api:ro
