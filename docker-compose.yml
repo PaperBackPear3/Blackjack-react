@@ -11,15 +11,15 @@ services:
   #   volumes:
   #     - ./fe/app/:/test:rw
   api:
-    container_name: api
+    container_name: be
     build:
-      context: "./api"
+      context: "./be"
       dockerfile: ./Dockerfile
     restart: always
     env_file:
-    - ./api/app/.env
+    - ./be/app/.env
     ports:
       - 8080:8080
       - 9229:9229
     volumes:
-      - ./api:/api:rw
+      - ./be:/be:rw
