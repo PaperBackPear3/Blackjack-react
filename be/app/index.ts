@@ -1,7 +1,7 @@
 //import { WebSocketServer } from "ws";
 import * as http from "http";
 import { v4 as uuidv4 } from 'uuid';
-import { BjWebSocket } from "./websocket";
+import { BjWebSocket } from "./BjWebSocket"
 
 // Spinning the http server and the WebSocket server.
 const server = http.createServer();
