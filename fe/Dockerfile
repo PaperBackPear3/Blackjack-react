@@ -1,6 +1,6 @@
-FROM node:latest
-EXPOSE 8080
+FROM node:lts
+EXPOSE 5173
 EXPOSE 9229
-#RUN yarn install
-#CMD [ "yarn", "install" ]
+WORKDIR /app
+CMD ["yarn","dev"]
 

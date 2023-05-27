@@ -1,19 +1,19 @@
 version: "3.9"
 services:
   # app:
-  #   container_name: "app"
+  #   container_name: app
   #   build:
-  #     context: "./fe"
-  #     dockerfile: "./Dockerfile"
+  #     context: ./fe
+  #     dockerfile: ./Dockerfile
   #   restart: always
   #   ports:
-  #     - 3000:3000
+  #     - 5173:5173
   #   volumes:
-  #     - ./fe/app/:/test:rw
+  #     - ./fe/app:/app:rw
   api:
     container_name: be
     build:
-      context: "./be"
+      context: ./be
       dockerfile: ./Dockerfile
     restart: always
     env_file:
