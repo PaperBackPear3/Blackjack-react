@@ -1,7 +1,5 @@
-FROM node:lts
-
-COPY . .
-
-RUN yarn install
-
-CMD [ "node", "server.js" ]
+FROM node:lts-alpine
+EXPOSE 8080
+EXPOSE 9229
+WORKDIR /api
+CMD [ "yarn", "dev" ]

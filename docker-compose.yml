@@ -1,17 +1,25 @@
 version: "3.9"
 services:
-  app:
-    container_name: "app"
-    build:
-      context: ./app
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./app:/home/node/app:ro
-  # api:
-  #   image: "node:latest"
+  # app:
+  #   container_name: "app"
+  #   build:
+  #     context: "./fe"
+  #     dockerfile: "./Dockerfile"
+  #   restart: always
   #   ports:
-  #     - "3001:3000"
+  #     - 3000:3000
   #   volumes:
-  #     - ./api:/home/node/api:ro
+  #     - ./fe/app/:/test:rw
+  api:
+    container_name: api
+    build:
+      context: "./api"
+      dockerfile: ./Dockerfile
+    restart: always
+    env_file:
+    - ./api/app/.env
+    ports:
+      - 8080:8080
+      - 9229:9229
+    volumes:
+      - ./api:/api:rw
