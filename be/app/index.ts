@@ -1,11 +1,19 @@
 //import { WebSocketServer } from "ws";
-import * as http from "http";
+import http from "http";
 import { v4 as uuidv4 } from 'uuid';
 import { BjWebSocket } from "./BjWebSocket"
+import WebSocket from 'ws';
+
+
 
 // Spinning the http server and the WebSocket server.
 const server = http.createServer();
-const bjWsServer = new BjWebSocket(server);
+
+const bjWsServer = new WebSocket.WebSocketServer<BjWebSocket>({
+    WebSocket: BjWebSocket,
+    server: server
+});
+
 
 const port = 8080;
 server.listen(port, () => {

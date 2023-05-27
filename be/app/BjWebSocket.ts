@@ -1,19 +1,15 @@
 import { WebSocketServer } from "ws";
 import * as http from "http";
+import WebSocket from 'ws';
 
-
-export class BjWebSocket extends WebSocketServer {
-
-    constructor(server: http.Server) {
-        super({ server });
-    }
+export class BjWebSocket extends WebSocket.WebSocket {
 
     send(message: string): 'send' {
         return 'send';
     }
 
     close(): 'close' {
-        
+
         return 'close';
     }
 
