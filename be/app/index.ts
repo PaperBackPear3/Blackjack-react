@@ -1,9 +1,8 @@
 //import { WebSocketServer } from "ws";
 import http from "http";
-import { v4 as uuidv4 } from 'uuid';
 import { BjWebSocket } from "./BjWebSocket"
 import WebSocket from 'ws';
-
+import crypto from 'crypto';
 
 
 // Spinning the http server and the WebSocket server.
@@ -26,7 +25,7 @@ const clients: any = {};
 // A new client connection request received
 bjWsServer.on('connection', function (connection) {
     // Generate a unique code for every user
-    const userId = uuidv4();
+    const userId = crypto.randomUUID()
     console.log(`Recieved a new connection.`);
     //console.log(connection)
     // Store the new connection and handle messages
@@ -37,11 +36,16 @@ bjWsServer.on('connection', function (connection) {
     connection.onmessage = function (event) {
         console.log(`Message received: ${event.data}`);
         // Broadcast the incoming message to all users
-        console.debug([clients, 'ciao', event])
         for (const key in clients) {
-            clients[key].send('mi hai scritto: ' + event.data);
+            console.log(key, event.data);
+            clients[key].send(userId + ' mi hai scritto: ' + event.data);
         }
     };
+
+    connection.onclose = function (event) {
+        console.log('connection closed', clients);
+        delete clients[userId];
+    }
 
     connection.on('error', console.error);
 

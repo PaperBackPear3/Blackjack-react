@@ -4,9 +4,9 @@ import WebSocket from 'ws';
 
 export class BjWebSocket extends WebSocket.WebSocket {
 
-    send(message: string): 'send' {
-        return 'send';
-    }
+    // send(message: string): 'send' {
+    //     return 'send';
+    // }
 
     close(): 'close' {
 
@@ -35,8 +35,5 @@ export class BjWebSocket extends WebSocket.WebSocket {
 
     sendPlayerCards(playerCards: string): 'sendPlayerCards' {
         return 'sendPlayerCards';
-    }
-    startGame(): 'startGame' {
-        return 'startGame';
     }
 }
