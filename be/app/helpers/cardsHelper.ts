@@ -1,4 +1,4 @@
-import { Symbol, Card, Deck } from "../definitions/symbols/definition";
+import { Symbol, Card, Deck } from "../../../common/definitions/symbols/definition";
 
 export function createTestDeck(): Deck {
     var symbols: Symbol[] = [
@@ -16,8 +16,7 @@ export function CreateDeck(symbols: Symbol[], cardsQuantity: number): Deck {
     var deck: Deck = {} as Deck
     symbols.forEach(symbol => {
         for (let i = 1; i <= CARDS_PER_SYMBOL; i++) {
-            var card =
-                cards.push({ symbol: symbol, value: i, image: '', altText: `${i} of ${symbol.name}` })
+            cards.push({ symbol: symbol, value: i, image: '', altText: `${i} of ${symbol.name}` })
         }
     });
     deck.cards = cards;

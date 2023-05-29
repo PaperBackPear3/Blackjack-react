@@ -11,7 +11,6 @@ function App() {
 
   async function handleClickLogin() {
     try {
-
       wsClient.current = new WebSocket(WS_URL);
       wsClient.current.onopen = () => {
         console.log('onopen');
@@ -41,7 +40,7 @@ function App() {
         onClick={handleClickLogin}
       //disabled={!wsClient || wsClient.readyState === ReadyState.OPEN}
       >
-        Login
+        Connect
       </button>
       <button
         onClick={handleClickSendMessage}
