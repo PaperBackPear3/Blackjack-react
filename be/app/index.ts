@@ -1,53 +1,134 @@
-//import { WebSocketServer } from "ws";
 import http from "http";
-import { BjWebSocket } from "./BjWebSocket"
-import WebSocket from 'ws';
+//import { BjWebSocket } from "./BjWebSocket"
+import WebSocket, { WebSocketServer } from 'ws';
 import crypto from 'crypto';
+import { createTestDeck } from "./helpers/cardsHelper";
+import { Deck } from "./definitions/symbols/definition";
+import express from "express";
+import cors from "cors";
+import session from "express-session";
+
+declare module 'express-session' {
+    export interface SessionData {
+        userId: string;
+    }
+}
+const clients: Map<string, WebSocket> = new Map();
 
 
 // Spinning the http server and the WebSocket server.
-const server = http.createServer();
 
-const bjWsServer = new WebSocket.WebSocketServer<BjWebSocket>({
-    WebSocket: BjWebSocket,
-    server: server
+const app = express()
+app.use(cors())
+
+const sessionParser = session({
+    saveUninitialized: false,
+    secret: '$eCuRiTy', //TODO find better secret, this is for testing 
+    resave: false
 });
 
+//
+// Serve static files from the 'public' folder.
+//
+app.use(express.static('public'));
+app.use(sessionParser);
 
-const port = 8080;
-server.listen(port, () => {
-    console.log(`WebSocket server is running on port ${port}`);
-});
-
-// I'm maintaining all active connections in this object
-const clients: any = {};
-
-// A new client connection request received
-bjWsServer.on('connection', function (connection) {
-    // Generate a unique code for every user
+app.post('/api/v1/login', function (req, res) {
+    //
+    // "Log in" user and set userId to session.
+    //
     const userId = crypto.randomUUID()
-    console.log(`Recieved a new connection.`);
-    //console.log(connection)
-    // Store the new connection and handle messages
-    clients[userId] = connection;
-    console.log(`${userId} connected.`);
+    console.log(`Updating session for user ${userId}`);
+    req.session.userId = userId;
+    res.send({ result: 'OK', message: 'Session updated' });
+});
 
-    //connection.on('message', function message(data)
-    connection.onmessage = function (event) {
-        console.log(`Message received: ${event.data}`);
-        // Broadcast the incoming message to all users
-        for (const key in clients) {
-            console.log(key, event.data);
-            clients[key].send(userId + ' mi hai scritto: ' + event.data);
+app.delete('/api/v1/logout', function (request, response) {
+    const ws = clients.get(request.session.userId!);
+
+    console.log('Destroying session');
+    request.session.destroy(function () {
+        if (ws) ws.close();
+
+        response.send({ result: 'OK', message: 'Session destroyed' });
+    });
+});
+
+//
+// Create an HTTP server.
+//
+const server = http.createServer(app);
+
+//
+// Create a WebSocket server completely detached from the HTTP server.
+//
+const wss = new WebSocketServer({ clientTracking: false, noServer: true });
+
+server.on('upgrade', function (request, socket, head) {
+    socket.on('error', console.error);
+
+    console.log('Parsing session from request...');
+
+    sessionParser(request, {}, () => {
+        console.log(JSON.stringify(request))
+        if (!request.session.userId) {
+            socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+            socket.destroy();
+            return;
+        }
+
+        console.log('Session is parsed!');
+
+        socket.removeListener('error', console.error);
+
+        wss.handleUpgrade(request, socket, head, function (ws) {
+            wss.emit('connection', ws, request);
+        });
+    });
+});
+
+wss.on('connection', function (ws, request) {
+    const userId = request.session.userId!;
+
+    clients.set(userId, ws);
+
+    ws.on('error', console.error);
+
+    ws.on('message', function (message) {
+        //
+        // Here we can now use session parameters.
+        //
+        console.log(`Received message ${message} from user ${userId}`);
+    });
+
+    ws.on('close', function () {
+        clients.delete(userId);
+    });
+
+    ws.onmessage = function (event) {
+        switch (event.data) {
+            case 'startGame':
+                var deck: Deck = createTestDeck()
+                //TODO add check player is already in a match
+                wss.clients.forEach(function each(player) {
+                    player.send(JSON.stringify(deck))
+                })
+                break;
+            case 'stop':
+                console.log('stop');
+                break;
+            case 'reset':
+                console.log('reset');
+                break;
+            default:
+                console.log('default');
         }
     };
+});
 
-    connection.onclose = function (event) {
-        console.log('connection closed', clients);
-        delete clients[userId];
-    }
-
-    connection.on('error', console.error);
-
-    connection.send('something');
+//
+// Start the server.
+//
+server.listen(8080, function () {
+    console.log('Listening on http://localhost:8080');
 });
