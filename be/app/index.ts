@@ -62,7 +62,8 @@ wss.on('connection', function (ws, request) {
             case 'startGame':
                 var deck: Deck = createTestDeck()
                 //TODO add check player is already in a match
-                wss.clients.forEach(function each(player) {
+                console.log(deck)
+                clients.forEach(function each(player) {
                     player.send(JSON.stringify(deck))
                 })
                 break;

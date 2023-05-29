@@ -1,50 +1,25 @@
-import useWebSocket, { ReadyState } from 'react-use-websocket';
-
 import './App.css'
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import axios from 'axios';
 
 const WS_URL = 'ws://127.0.0.1:8080';
 
 function App() {
 
-  //const [socketUrl, setSocketUrl] = useState(WS_URL);
-  //const [messageHistory, setMessageHistory] = useState<MessageEvent[]>([])
-  //const { sendMessage, lastMessage, readyState } = useWebSocket('');
-  // const [ws, setWs] = useState<WebSocket | null>(null);
-  // useEffect(() => {
-  //   if (lastMessage !== null) {
-  //     setMessageHistory((prev) => prev.concat(lastMessage));
-  //     console.table(JSON.parse(lastMessage.data));
-  //   }
-  // }, [lastMessage, setMessageHistory]);
-  var wsClient: WebSocket | null = null;
-
-  type LoginResponse = {
-    result: string,
-    message: string
-  }
+  var wsClient = useRef<WebSocket | null>(null);
 
 
   async function handleClickLogin() {
     try {
-      const { data, status } = await axios.post<LoginResponse>(
-        'http://localhost:8080/api/v1/login'
-      );
 
-      console.log(JSON.stringify(data, null, 4));
-
-      // 👇️ "response status is: 200"
-
-      console.log('response status is: ', status);
-      wsClient = new WebSocket(WS_URL);
-      wsClient.onopen = () => {
+      wsClient.current = new WebSocket(WS_URL);
+      wsClient.current.onopen = () => {
         console.log('onopen');
-        wsClient?.send(JSON.stringify({ 'type': 'login', 'data': data.message }))
+        wsClient.current?.send(JSON.stringify({ 'type': 'login' }))
       };
-
-
-      return data;
+      wsClient.current.addEventListener('message', function (event) {
+        console.log(event.data);
+      });
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.log('error message: ', error.message);
@@ -58,7 +33,7 @@ function App() {
 
 
 
-  const handleClickSendMessage = useCallback(() => wsClient!.send('startGame'), []);
+  const handleClickSendMessage = useCallback(() => wsClient.current?.send('startGame'), []);
 
   return (
     <>
