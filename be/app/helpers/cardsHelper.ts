@@ -1,4 +1,5 @@
-import { Symbol, Card, Deck } from "../../../common/definitions/symbols/definition";
+import { Card, Deck, Symbol } from "../common/definitions/symbols/definition";
+
 
 export function createTestDeck(): Deck {
     var symbols: Symbol[] = [

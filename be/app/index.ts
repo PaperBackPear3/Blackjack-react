@@ -3,7 +3,7 @@ import http from "http";
 import WebSocket, { WebSocketServer } from 'ws';
 import crypto from 'crypto';
 import { createTestDeck } from "./helpers/cardsHelper";
-import { Deck } from "../../common/definitions/symbols/definition";
+import { Deck } from "./common/definitions/symbols/definition";
 import express from "express";
 import cors from "cors";
 
