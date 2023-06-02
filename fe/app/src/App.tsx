@@ -6,7 +6,7 @@ const WS_URL = 'ws://127.0.0.1:8080';
 
 function App() {
 
-  var wsClient = useRef<WebSocket | null>(null);
+  const wsClient = useRef<WebSocket | null>(null);
 
 
   async function handleClickLogin() {
@@ -32,7 +32,7 @@ function App() {
 
 
 
-  const handleClickSendMessage = useCallback(() => wsClient.current?.send('startGame'), []);
+  const handleClickSendMessage = useCallback(() => wsClient.current?.send('joinRoom'), []);
 
   return (
     <>
