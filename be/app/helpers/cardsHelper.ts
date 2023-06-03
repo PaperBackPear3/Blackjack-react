@@ -1,4 +1,4 @@
-import { Card, Deck, Symbol } from "../common/definitions/symbols/definition";
+import { Card, Deck, Symbol } from "../common/symbols/definition";
 
 
 export function createTestDeck(): Deck {

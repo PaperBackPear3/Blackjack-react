@@ -1,14 +1,12 @@
-import http from "http";
 //import { BjWebSocket } from "./BjWebSocket"
-import { WebSocketServer } from 'ws';
 import crypto from 'crypto';
-import { createTestDeck } from "./helpers/cardsHelper";
-import { Deck } from "./common/definitions/symbols/definition";
 import express from "express";
 import cors from "cors";
-import { RoomMessageData, clientData, roomData, } from "./common/definitions/types";
+import { RoomMessageData, clientData, roomData, } from "./common/types/types";
 import { error } from "console";
 import { gameSetUp } from "./helpers/gameHelpers/gameSetUp";
+import { Server } from "socket.io";
+import { createServer } from 'http';
 
 const rooms: Map<string, roomData> = new Map();
 
@@ -25,32 +23,37 @@ app.use(express.static('public'));
 //
 // Create an HTTP server.
 //
-const server = http.createServer(app);
+const HttpServer = createServer(app);
 
 //
 // Create a WebSocket server completely detached from the HTTP server.
 //
-const wss = new WebSocketServer({ clientTracking: false, noServer: true });
-
-server.on('upgrade', function (request, socket, head) {
-    socket.on('error', console.error);
-
-    wss.handleUpgrade(request, socket, head, function (ws) {
-        wss.emit('connection', ws, request);
-    });
-
+const ioWss = new Server(HttpServer, {
+    cors: {
+        origin: "http://localhost:5173",
+        methods: ["GET", "POST"]
+    }
 });
 
-wss.on('connection', function (ws, request) {
 
+
+ioWss.on('connection', (socket) => {
+    console.log(socket.id);
     const userId = crypto.randomUUID()
+    const roomId = Math.random().toString(30).slice(2, 8).toUpperCase()
+
+
+    ioWss.on('error', console.error);
+    
+    socket.on("disconnect", (reason) => {
+        console.log("disconnecting", reason);
+        socket.send("user has left", socket.id);
+    })
 
     const newUser: clientData = {
-        webSocket: ws,
+        webSocket: socket,
         isSpectating: true
     }
-
-    const roomId = Math.random().toString(30).slice(2, 8).toUpperCase()
 
     const room: roomData = {
         owner: userId,
@@ -61,19 +64,23 @@ wss.on('connection', function (ws, request) {
     }
     rooms.set(roomId, room);
 
-    ws.on('joinRoom', function joinRoom(data: RoomMessageData) {
+    socket.on('message', function message(data: RoomMessageData) {
+        console.log('received: ', data.userId, " ", userId, ' message');
+    });
+
+    socket.on('joinRoom', function joinRoom(data: RoomMessageData) {
         console.log('joinRoom');
-        
+
         rooms.get(data.roomId)?.players.set(userId, newUser);
         rooms.delete(roomId);
     })
 
-    ws.on('leaveRoom', function leaveRoom(data: RoomMessageData) {
+    socket.on('leaveRoom', function leaveRoom(data: RoomMessageData) {
         console.log('received: ', data.userId, " ", userId, ' leaveRoom');
         rooms.get(data.roomId)?.players.delete(data.userId);
     })
 
-    ws.on('spectate', function spectate(data: RoomMessageData) {
+    socket.on('spectate', function spectate(data: RoomMessageData) {
         console.log('received: ', data.userId, " ", userId, ' spectateRoom');
         var userData = rooms.get(data.roomId)?.players.get(data.userId)
         if (!userData)
@@ -82,7 +89,7 @@ wss.on('connection', function (ws, request) {
         rooms.get(data.roomId)?.players.set(data.userId, userData)
     })
 
-    ws.on('startGame', function startGame(data: RoomMessageData) {
+    socket.on('startGame', function startGame(data: RoomMessageData) {
         console.log('received: ', data.userId, " ", userId, ' startGame');
         var roomData = rooms.get(data.roomId)
         if (!roomData)
@@ -92,27 +99,20 @@ wss.on('connection', function (ws, request) {
     }
     )
 
-    ws.on('stop', function stopGame(data: RoomMessageData) {
+    socket.on('stop', function stopGame(data: RoomMessageData) {
         console.log('received: ', data.userId, " ", userId, ' stop');
         rooms.get(data.roomId)?.players.delete(data.userId);
     })
 
-    ws.on('reset', function resetRoom(data: RoomMessageData) {
+    socket.on('reset', function resetRoom(data: RoomMessageData) {
         console.log('received: ', data.userId, " ", userId, ' reset');
         rooms.get(data.roomId)?.players.delete(data.userId);
     })
 
-
-
-    ws.on('close', function () {
-        rooms.delete(roomId);
-    });
-    ws.on('error', console.error);
 });
-
 //
 // Start the server.
 //
-server.listen(8080, function () {
+HttpServer.listen(8080, function () {
     console.log('Listening on http://localhost:8080');
 });

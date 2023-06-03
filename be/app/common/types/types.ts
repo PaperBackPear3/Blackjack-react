@@ -1,5 +1,5 @@
 import exp from "constants";
-import { Deck } from "./symbols/definition"
+import { Deck } from "../symbols/definition"
 import WebSocket from 'ws';
 
 

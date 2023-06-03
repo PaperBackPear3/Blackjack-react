@@ -1,23 +1,26 @@
 import './App.css'
 import { useCallback, useRef } from 'react';
 import axios from 'axios';
+import { io, Socket } from "socket.io-client";
+import { ServerToClientEvents, ClientToServerEvents } from './common/types/socketIoTypes';
 
 const WS_URL = 'ws://127.0.0.1:8080';
 
 function App() {
 
-  const wsClient = useRef<WebSocket | null>(null);
+  let wsClient: Socket<ServerToClientEvents, ClientToServerEvents> = io();
 
 
-  async function handleClickLogin() {
+  function handleClickLogin() {
     try {
-      wsClient.current = new WebSocket(WS_URL);
-      wsClient.current.onopen = () => {
-        console.log('onopen');
-        wsClient.current?.send(JSON.stringify({ 'type': 'login' }))
-      };
-      wsClient.current.addEventListener('message', function (event) {
-        console.log(event.data);
+      wsClient = io(WS_URL)
+      wsClient.on("connect", () => {
+        console.log(wsClient.id);
+      });
+
+      wsClient.on("disconnect", () => {
+        console.log(wsClient.id); // undefined
+
       });
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -30,9 +33,13 @@ function App() {
     }
   }
 
+  function handleClickClose() {
+    wsClient.emit('joinRoom')
+    wsClient.disconnect()
+  }
 
 
-  const handleClickSendMessage = useCallback(() => wsClient.current?.send('joinRoom'), []);
+  //const handleClickSendMessage = useCallback(() => wsClient.send('joinRoom'), []);
 
   return (
     <>
@@ -42,8 +49,16 @@ function App() {
       >
         Connect
       </button>
+      <br></br>
       <button
-        onClick={handleClickSendMessage}
+        onClick={handleClickClose}
+      //disabled={!wsClient || wsClient.readyState === ReadyState.OPEN}
+      >
+        Close
+      </button>
+      <br></br>
+      <button
+      //onClick={ /*handleClickSendMessage}
       //  disabled={wsClient!.readyState !== ReadyState.OPEN}
       >
         Click Me to get the deck
