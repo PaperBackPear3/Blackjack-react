@@ -1,20 +1,32 @@
+import { toast } from "react-toastify";
 
 
-export function RoomsManager({ roomId, setRoomId, isConnected, handleClickJoinRoom }: {
-    roomId: string,
-    setRoomId: (roomId: string) => void,
+export function RoomsManager({ currentRoomId, setFrinedRoomId, isConnected, handleClickJoinRoom }: {
+    currentRoomId: string,
+    setFrinedRoomId: (roomId: string) => void,
     isConnected: boolean,
     handleClickJoinRoom: () => void
-
 }) {
-    return (<>
-        <input type='text' placeholder='insert roomId' value={roomId} onChange={e => setRoomId(e.target.value)} />
-        <button
-            onClick={handleClickJoinRoom}
-            disabled={!isConnected}
-        >
-            Join Room
-        </button>
-    </>
+    return (
+        <>
+            <h2>Your Room</h2>
+            <span>
+                <p>{currentRoomId}</p>
+                <button onClick={() => {
+                    navigator.clipboard.writeText(currentRoomId);
+                    toast.success(currentRoomId + ' Copied to clipboard');
+                }}>
+                    Copy
+                </button>
+            </span>
+            <h2>Join friends Room</h2>
+            <input type='text' placeholder='insert roomId' onChange={e => setFrinedRoomId(e.target.value)} />
+            <button
+                onClick={handleClickJoinRoom}
+                disabled={!isConnected}
+            >
+                Join Room
+            </button>
+        </>
     )
 }

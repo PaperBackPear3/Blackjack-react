@@ -4,6 +4,8 @@ import { clientSocket } from '../websocket/clientSocket';
 export function ConnectionManager() {
   function connect() {
     clientSocket.connect();
+    console.log(clientSocket);
+  
   }
 
   function disconnect() {

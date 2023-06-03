@@ -3,27 +3,35 @@ import { useEffect, useState } from 'react';
 import { clientSocket } from './websocket/clientSocket';
 import { ConnectionManager } from './components/ConnectionManaget';
 import { ConnectionState } from './components/ConnectionStatus';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { RoomsManager } from './components/RoomsManager';
+import { ToastComponentContainer } from './components/Toast';
 function App() {
 
 
   const [userId, setUserId] = useState<string>('');
   const [roomId, setRoomId] = useState<string>('');
+  const [friendRoomId, setFrinedRoomId] = useState<string>('');
   const [isConnected, setIsConnected] = useState(clientSocket.connected);
 
   useEffect(() => {
     function onConnect() {
       setUserId(clientSocket.id);
       setIsConnected(true);
+      console.log('connected use effect ', clientSocket)
     }
 
     function onDisconnect() {
       setIsConnected(false);
     }
 
-    clientSocket.on('connect', onConnect);
+    clientSocket.on('connect', onConnect,);
     clientSocket.on('disconnect', onDisconnect);
+    clientSocket.on('clientRoomId', (roomId: string) => {
+      setRoomId(roomId);
+    });
+
+
 
     return () => {
       clientSocket.off('connect', onConnect);
@@ -33,12 +41,12 @@ function App() {
 
 
   function handleClickJoinRoom() {
-    if (!roomId || roomId.length === 0) {
+    if (!friendRoomId || friendRoomId.length === 0) {
       toast.error("insert RoomID");
       return;
     }
-    console.log(roomId, userId, clientSocket)
-    clientSocket.emit('joinRoom', { roomId: roomId, userId: userId })
+    console.log(roomId,friendRoomId ,userId, clientSocket)
+    clientSocket.emit('joinRoom', { roomId: friendRoomId, userId: userId })
   }
 
   return (
@@ -46,19 +54,8 @@ function App() {
       <ConnectionState isConnected={isConnected} />
       <ConnectionManager />
       <br></br>
-      <RoomsManager roomId={roomId} setRoomId={setRoomId} isConnected={isConnected} handleClickJoinRoom={handleClickJoinRoom} />
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
+      <RoomsManager currentRoomId={roomId} setFrinedRoomId={setFrinedRoomId} isConnected={isConnected} handleClickJoinRoom={handleClickJoinRoom} />
+      <ToastComponentContainer />
     </>
   );
 }

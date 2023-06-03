@@ -29,10 +29,13 @@ const ioWss = new Server(HttpServer, {
 
 
 ioWss.on('connection', (socket) => {
+
+    
     console.log('start', socket.id);
     //const userId = crypto.randomUUID()
     const roomId = Math.random().toString(30).slice(2, 8).toUpperCase()
-
+    //socket.data
+    socket.emit('clientRoomId', roomId)
 
     socket.on('error', console.error);
 
