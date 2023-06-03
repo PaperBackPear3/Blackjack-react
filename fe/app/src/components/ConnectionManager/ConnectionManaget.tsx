@@ -1,5 +1,5 @@
 import React from 'react';
-import { clientSocket } from '../websocket/clientSocket';
+import { clientSocket } from '../../websocket/clientSocket';
 
 export function ConnectionManager() {
   function connect() {

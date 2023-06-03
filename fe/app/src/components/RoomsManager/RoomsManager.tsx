@@ -1,6 +1,5 @@
 import { toast } from "react-toastify";
 
-
 export function RoomsManager({ currentRoomId, setFrinedRoomId, isConnected, handleClickJoinRoom }: {
     currentRoomId: string,
     setFrinedRoomId: (roomId: string) => void,
@@ -10,15 +9,15 @@ export function RoomsManager({ currentRoomId, setFrinedRoomId, isConnected, hand
     return (
         <>
             <h2>Your Room</h2>
-            <span>
-                <p>{currentRoomId}</p>
+            <div className='show-player-room' style={{ display: 'inline-block' }}>
+                <div>{currentRoomId}</div>
                 <button onClick={() => {
                     navigator.clipboard.writeText(currentRoomId);
                     toast.success(currentRoomId + ' Copied to clipboard');
                 }}>
                     Copy
                 </button>
-            </span>
+            </div>
             <h2>Join friends Room</h2>
             <input type='text' placeholder='insert roomId' onChange={e => setFrinedRoomId(e.target.value)} />
             <button

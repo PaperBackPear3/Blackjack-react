@@ -1,10 +1,10 @@
 import './App.css'
 import { useEffect, useState } from 'react';
 import { clientSocket } from './websocket/clientSocket';
-import { ConnectionManager } from './components/ConnectionManaget';
-import { ConnectionState } from './components/ConnectionStatus';
+import { ConnectionManager } from './components/ConnectionManager/ConnectionManaget';
+import { ConnectionState } from './components/ConnectionStatus/ConnectionStatus';
 import { toast } from 'react-toastify';
-import { RoomsManager } from './components/RoomsManager';
+import { RoomsManager } from './components/RoomsManager/RoomsManager';
 import { ToastComponentContainer } from './components/Toast';
 function App() {
 
