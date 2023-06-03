@@ -1,19 +1,19 @@
 import exp from "constants";
 import { Deck } from "../symbols/definition"
-import WebSocket from 'ws';
+import { Socket } from "socket.io";
 
 
 export type clientData = {
-    webSocket: WebSocket,
-    isSpectating: boolean
+    webSocket: Socket,
+    isSpectating: boolean,
 }
 
 export type roomData = {
     owner: string,
     players: Map<string, clientData>,
-    deck: Deck[]
-    gameStarted: boolean
-    gameEnded: boolean
+    deck: Deck[],
+    gameStarted: boolean,
+    gameEnded: boolean,
 }
 
 export type RoomMessageData = {
@@ -23,5 +23,5 @@ export type RoomMessageData = {
 
 export type MessageData = {
     roomId: string,
-    message: string
+    message: string,
 }

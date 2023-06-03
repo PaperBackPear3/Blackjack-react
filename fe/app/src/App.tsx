@@ -1,78 +1,53 @@
 import './App.css'
-import { useCallback, useRef } from 'react';
-import axios from 'axios';
-import { io, Socket } from "socket.io-client";
-import { ServerToClientEvents, ClientToServerEvents } from './common/types/socketIoTypes';
-
-const WS_URL = 'ws://127.0.0.1:8080';
-
+import { useEffect, useState } from 'react';
+import { clientSocket } from './websocket/clientSocket';
+import { ConnectionManager } from './components/ConnectionManaget';
+import { ConnectionState } from './components/ConnectionStatus';
 function App() {
 
-  let wsClient: Socket<ServerToClientEvents, ClientToServerEvents> = io();
 
+  const [userId, setUserId] = useState<string>('');
+  const [roomId, setRoomId] = useState<string>('');
+  const [isConnected, setIsConnected] = useState(clientSocket.connected);
 
-  function handleClickLogin() {
-    try {
-      wsClient = io(WS_URL)
-      wsClient.on("connect", () => {
-        console.log(wsClient.id);
-      });
-
-      wsClient.on("disconnect", () => {
-        console.log(wsClient.id); // undefined
-
-      });
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.log('error message: ', error.message);
-        return error.message;
-      } else {
-        console.log('unexpected error: ', error);
-        return 'An unexpected error occurred';
-      }
+  useEffect(() => {
+    function onConnect() {
+      setUserId(clientSocket.id);
+      setIsConnected(true);
     }
+
+    function onDisconnect() {
+      setIsConnected(false);
+    }
+
+    clientSocket.on('connect', onConnect);
+    clientSocket.on('disconnect', onDisconnect);
+
+    return () => {
+      clientSocket.off('connect', onConnect);
+      clientSocket.off('disconnect', onDisconnect);
+    };
+  }, []);
+
+
+  function handleClickJoinRoom() {
+    console.log(roomId, userId, clientSocket)
+    clientSocket.emit('joinRoom', { roomId: roomId, userId: userId })
+    //(answer) => {
+    // });
   }
-
-  function handleClickClose() {
-    wsClient.emit('joinRoom')
-    wsClient.disconnect()
-  }
-
-
-  //const handleClickSendMessage = useCallback(() => wsClient.send('joinRoom'), []);
 
   return (
     <>
+      <ConnectionState isConnected={isConnected} />
+      <ConnectionManager />
+      <br></br>
+      <input type='text' placeholder='roomId' value={roomId} onChange={e => setRoomId(e.target.value)} />
       <button
-        onClick={handleClickLogin}
-      //disabled={!wsClient || wsClient.readyState === ReadyState.OPEN}
+        onClick={handleClickJoinRoom}
       >
-        Connect
+        Join Room
       </button>
-      <br></br>
-      <button
-        onClick={handleClickClose}
-      //disabled={!wsClient || wsClient.readyState === ReadyState.OPEN}
-      >
-        Close
-      </button>
-      <br></br>
-      <button
-      //onClick={ /*handleClickSendMessage}
-      //  disabled={wsClient!.readyState !== ReadyState.OPEN}
-      >
-        Click Me to get the deck
-      </button>
-      <br></br>
-      {/* <span>The WebSocket is currently {(wsClient != null && wsClient.readyState) === ReadyState.OPEN ? 'open' : 'closed'}</span> */}
-      <span>Socket URL: {WS_URL}</span>
-      <span>whole history </span>
-      <br></br>
-      {/* <ul> //TODO redo this with new socket
-        {messageHistory.map((message, idx) => (
-          <span key={idx}>{message ? message['data'] : null}</span>
-        ))}
-      </ul> */}
     </>
   );
 }

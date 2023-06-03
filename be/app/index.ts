@@ -14,15 +14,6 @@ const rooms: Map<string, roomData> = new Map();
 
 const app = express()
 app.use(cors())
-
-//
-// Serve static files from the 'public' folder.
-//
-app.use(express.static('public'));
-
-//
-// Create an HTTP server.
-//
 const HttpServer = createServer(app);
 
 //
@@ -38,13 +29,13 @@ const ioWss = new Server(HttpServer, {
 
 
 ioWss.on('connection', (socket) => {
-    console.log(socket.id);
+    console.log('start',socket.id);
     const userId = crypto.randomUUID()
     const roomId = Math.random().toString(30).slice(2, 8).toUpperCase()
 
 
-    ioWss.on('error', console.error);
-    
+    socket.on('error', console.error);
+
     socket.on("disconnect", (reason) => {
         console.log("disconnecting", reason);
         socket.send("user has left", socket.id);
@@ -64,12 +55,8 @@ ioWss.on('connection', (socket) => {
     }
     rooms.set(roomId, room);
 
-    socket.on('message', function message(data: RoomMessageData) {
-        console.log('received: ', data.userId, " ", userId, ' message');
-    });
-
     socket.on('joinRoom', function joinRoom(data: RoomMessageData) {
-        console.log('joinRoom');
+        console.log('joinRoom',data);
 
         rooms.get(data.roomId)?.players.set(userId, newUser);
         rooms.delete(roomId);
