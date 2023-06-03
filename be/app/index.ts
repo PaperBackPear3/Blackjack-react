@@ -29,16 +29,15 @@ const ioWss = new Server(HttpServer, {
 
 
 ioWss.on('connection', (socket) => {
-    console.log('start',socket.id);
-    const userId = crypto.randomUUID()
+    console.log('start', socket.id);
+    //const userId = crypto.randomUUID()
     const roomId = Math.random().toString(30).slice(2, 8).toUpperCase()
 
 
     socket.on('error', console.error);
 
     socket.on("disconnect", (reason) => {
-        console.log("disconnecting", reason);
-        socket.send("user has left", socket.id);
+        console.log(socket.id, " disconnecting... ", reason);
     })
 
     const newUser: clientData = {
@@ -47,8 +46,8 @@ ioWss.on('connection', (socket) => {
     }
 
     const room: roomData = {
-        owner: userId,
-        players: new Map<string, clientData>().set(userId, newUser),
+        owner: socket.id,
+        players: new Map<string, clientData>().set(socket.id, newUser),
         deck: [],
         gameStarted: false,
         gameEnded: false
@@ -56,19 +55,19 @@ ioWss.on('connection', (socket) => {
     rooms.set(roomId, room);
 
     socket.on('joinRoom', function joinRoom(data: RoomMessageData) {
-        console.log('joinRoom',data);
+        console.log('joinRoom', data);
 
-        rooms.get(data.roomId)?.players.set(userId, newUser);
+        rooms.get(data.roomId)?.players.set(socket.id, newUser);
         rooms.delete(roomId);
     })
 
     socket.on('leaveRoom', function leaveRoom(data: RoomMessageData) {
-        console.log('received: ', data.userId, " ", userId, ' leaveRoom');
+        console.log('received: ', data.userId, " ", socket.id, ' leaveRoom');
         rooms.get(data.roomId)?.players.delete(data.userId);
     })
 
     socket.on('spectate', function spectate(data: RoomMessageData) {
-        console.log('received: ', data.userId, " ", userId, ' spectateRoom');
+        console.log('received: ', data.userId, " ", socket.id, ' spectateRoom');
         var userData = rooms.get(data.roomId)?.players.get(data.userId)
         if (!userData)
             throw error;
@@ -77,7 +76,7 @@ ioWss.on('connection', (socket) => {
     })
 
     socket.on('startGame', function startGame(data: RoomMessageData) {
-        console.log('received: ', data.userId, " ", userId, ' startGame');
+        console.log('received: ', data.userId, " ", socket.id, ' startGame');
         var roomData = rooms.get(data.roomId)
         if (!roomData)
             throw error;
@@ -87,12 +86,12 @@ ioWss.on('connection', (socket) => {
     )
 
     socket.on('stop', function stopGame(data: RoomMessageData) {
-        console.log('received: ', data.userId, " ", userId, ' stop');
+        console.log('received: ', data.userId, " ", socket.id, ' stop');
         rooms.get(data.roomId)?.players.delete(data.userId);
     })
 
     socket.on('reset', function resetRoom(data: RoomMessageData) {
-        console.log('received: ', data.userId, " ", userId, ' reset');
+        console.log('received: ', data.userId, " ", socket.id, ' reset');
         rooms.get(data.roomId)?.players.delete(data.userId);
     })
 

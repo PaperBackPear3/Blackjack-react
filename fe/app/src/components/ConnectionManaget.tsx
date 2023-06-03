@@ -12,8 +12,8 @@ export function ConnectionManager() {
 
   return (
     <>
-      <button onClick={ connect }>Connect</button>
-      <button onClick={ disconnect }>Disconnect</button>
+      <button onClick={connect} disabled={clientSocket.connected}>Connect</button>
+      <button onClick={disconnect} disabled={clientSocket.disconnected}>Disconnect</button>
     </>
   );
 }

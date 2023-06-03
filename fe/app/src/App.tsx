@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { clientSocket } from './websocket/clientSocket';
 import { ConnectionManager } from './components/ConnectionManaget';
 import { ConnectionState } from './components/ConnectionStatus';
+import { ToastContainer, toast } from 'react-toastify';
+import { RoomsManager } from './components/RoomsManager';
 function App() {
 
 
@@ -31,10 +33,12 @@ function App() {
 
 
   function handleClickJoinRoom() {
+    if (!roomId || roomId.length === 0) {
+      toast.error("insert RoomID");
+      return;
+    }
     console.log(roomId, userId, clientSocket)
     clientSocket.emit('joinRoom', { roomId: roomId, userId: userId })
-    //(answer) => {
-    // });
   }
 
   return (
@@ -42,12 +46,19 @@ function App() {
       <ConnectionState isConnected={isConnected} />
       <ConnectionManager />
       <br></br>
-      <input type='text' placeholder='roomId' value={roomId} onChange={e => setRoomId(e.target.value)} />
-      <button
-        onClick={handleClickJoinRoom}
-      >
-        Join Room
-      </button>
+      <RoomsManager roomId={roomId} setRoomId={setRoomId} isConnected={isConnected} handleClickJoinRoom={handleClickJoinRoom} />
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </>
   );
 }
