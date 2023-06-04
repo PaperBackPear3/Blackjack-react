@@ -6,6 +6,7 @@ import { ConnectionState } from './components/ConnectionStatus/ConnectionStatus'
 import { toast } from 'react-toastify';
 import { RoomsManager } from './components/RoomsManager/RoomsManager';
 import { ToastComponentContainer } from './components/Toast';
+import { MessageData } from './common/types/socketIoTypes';
 function App() {
 
 
@@ -25,17 +26,25 @@ function App() {
       setIsConnected(false);
     }
 
+    function onRoomEvent(roomEvent: MessageData) {
+      toast(roomEvent.message, { type: roomEvent.success ? 'success' : 'error' });
+    }
+
     clientSocket.on('connect', onConnect,);
     clientSocket.on('disconnect', onDisconnect);
+
     clientSocket.on('clientRoomId', (roomId: string) => {
       setRoomId(roomId);
     });
-
+    clientSocket.on('roomEvent', onRoomEvent);
 
 
     return () => {
       clientSocket.off('connect', onConnect);
       clientSocket.off('disconnect', onDisconnect);
+      clientSocket.off('clientRoomId');
+      clientSocket.off('roomEvent', onRoomEvent);
+
     };
   }, []);
 
@@ -45,8 +54,12 @@ function App() {
       toast.error("insert RoomID");
       return;
     }
-    console.log(roomId,friendRoomId ,userId, clientSocket)
-    clientSocket.emit('joinRoom', { roomId: friendRoomId, userId: userId })
+    clientSocket.emit('joinRoom', { roomId: friendRoomId, userId: userId }, (response) => {
+      if (response.success) {
+        setRoomId(response.data);
+      }
+      toast(response.message, { type: response.success ? 'success' : 'error' });
+    });
   }
 
   return (
