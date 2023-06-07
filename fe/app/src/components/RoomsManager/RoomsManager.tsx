@@ -9,15 +9,13 @@ export function RoomsManager({ currentRoomId, setFrinedRoomId, isConnected, hand
     return (
         <>
             <h2>Your Room</h2>
-            <div className='show-player-room' style={{ display: 'inline-block' }}>
-                <div>{currentRoomId}</div>
-                <button onClick={() => {
-                    navigator.clipboard.writeText(currentRoomId);
-                    toast.success(currentRoomId + ' Copied to clipboard');
-                }}>
-                    Copy
-                </button>
-            </div>
+            <p>{isConnected ? currentRoomId : 'not connected'}</p>
+            <button onClick={() => {
+                navigator.clipboard.writeText(currentRoomId);
+                toast.success(currentRoomId + ' Copied to clipboard');
+            }}>
+                Copy
+            </button>
             <h2>Join friends Room</h2>
             <input type='text' placeholder='insert roomId' onChange={e => setFrinedRoomId(e.target.value)} />
             <button

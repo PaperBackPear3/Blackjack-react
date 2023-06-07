@@ -16,16 +16,21 @@ export interface ClientToServerEvents {
     leaveRoom: (data: RoomMessageData, callback: (CallbackResponseData: CallbackResponseData) => void) => void;
     spectate: (data: RoomMessageData, callback: (CallbackResponseData: CallbackResponseData) => void) => void;
     startGame: (data: RoomMessageData, callback: (CallbackResponseData: CallbackResponseData) => void) => void;
+    playerAction: (data: MessageData) => void;
+    bet: (data: GameAction, callback: (CallbackResponseData: CallbackResponseData) => void) => boolean;
+    skip: (data: GameAction, callback: (CallbackResponseData: CallbackResponseData) => void) => boolean;
+    draw: (data: GameAction, callback: (CallbackResponseData: CallbackResponseData) => void) => boolean;
+
 }
 
 export interface InterServerEvents {
     ping: () => void;
-  }
-  
+}
+
 export interface SocketData {
     name: string;
     age: number;
-  }
+}
 
 export type clientData = {
     webSocket: Socket,
@@ -50,11 +55,17 @@ export type MessageData = {
     success: boolean,
     type: string,
     message: string,
+    data?: string,
+}
+
+export type GameAction = {
+    userId: string,
+    data: string | number | boolean,
 }
 
 export type CallbackResponseData = {
-    type: string,
     success: boolean,
+    type: string,
     message: string,
     data?: string,
 }

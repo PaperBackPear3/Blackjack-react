@@ -13,7 +13,12 @@ function App() {
   const [userId, setUserId] = useState<string>('');
   const [roomId, setRoomId] = useState<string>('');
   const [friendRoomId, setFrinedRoomId] = useState<string>('');
-  const [isConnected, setIsConnected] = useState(clientSocket.connected);
+  const [isConnected, setIsConnected] = useState<boolean>(clientSocket.connected);
+  const [bettedvalue, setBettedValue] = useState<number>(0);
+  const [lastBet, setLastBet] = useState<number>(0);
+  const [skipped, setSkipped] = useState<boolean>(false);
+  const [isplaying, setIsPlaying] = useState<boolean>(false);
+
 
   useEffect(() => {
     function onConnect() {
@@ -38,7 +43,6 @@ function App() {
     });
     clientSocket.on('roomEvent', onRoomEvent);
 
-
     return () => {
       clientSocket.off('connect', onConnect);
       clientSocket.off('disconnect', onDisconnect);
@@ -55,20 +59,37 @@ function App() {
       return;
     }
     clientSocket.emit('joinRoom', { roomId: friendRoomId, userId: userId }, (response) => {
-      if (response.success) {
+      if (response.success && response.data) {
         setRoomId(response.data);
       }
       toast(response.message, { type: response.success ? 'success' : 'error' });
     });
   }
 
+
+  function bet() {
+    clientSocket.emit('bet', { userId: userId, data: bettedvalue }, (response) => {
+      if (response.success && response.data) {
+
+        setBettedValue(parseInt(response.data));
+      }
+      toast(response.message, { type: response.success ? 'success' : 'error' });
+    })
+
+  }
+
   return (
     <>
-      <ConnectionState isConnected={isConnected} />
-      <ConnectionManager />
-      <br></br>
-      <RoomsManager currentRoomId={roomId} setFrinedRoomId={setFrinedRoomId} isConnected={isConnected} handleClickJoinRoom={handleClickJoinRoom} />
-      <ToastComponentContainer />
+      <div className='header'>
+        <ConnectionState isConnected={isConnected} />
+        <ConnectionManager />
+        <br></br>
+        <RoomsManager currentRoomId={roomId} setFrinedRoomId={setFrinedRoomId} isConnected={isConnected} handleClickJoinRoom={handleClickJoinRoom} />
+        <ToastComponentContainer />
+      </div>
+      <div className='body'>
+
+      </div>
     </>
   );
 }

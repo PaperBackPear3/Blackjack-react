@@ -1,13 +1,11 @@
 //import { BjWebSocket } from "./BjWebSocket"
-import crypto from 'crypto';
 import express from "express";
 import cors from "cors";
-import { CallbackResponseData, ClientToServerEvents, InterServerEvents, RoomMessageData, ServerToClientEvents, SocketData, clientData, roomData, } from "./common/types/types";
+import { CallbackResponseData, ClientToServerEvents, GameAction, InterServerEvents, RoomMessageData, ServerToClientEvents, SocketData, clientData, roomData, } from "./common/types/types";
 import { error } from "console";
 import { gameSetUp } from "./helpers/gameHelpers/gameSetUp";
-import { RemoteSocket, Server } from "socket.io";
+import { Server } from "socket.io";
 import { createServer } from 'http';
-import { Socket } from 'dgram';
 
 const rooms: Map<string, roomData> = new Map();
 
@@ -119,6 +117,10 @@ ioWss.on('connection', (socket) => {
         rooms.set(data.roomId, gameSetUp(roomData))
     }
     )
+
+    socket.on("bet", function bet(params: GameAction) {
+        return true;
+    });
 
     // socket.on('stop', function stopGame(data: RoomMessageData) {
     //     console.log('received: ', data.userId, " ", socket.id, ' stop');
