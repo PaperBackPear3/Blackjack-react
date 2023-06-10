@@ -1,11 +1,15 @@
 //import { BjWebSocket } from "./BjWebSocket"
 import express from "express";
 import cors from "cors";
-import { BetAction, CallbackResponseData, ClientToServerEvents, InterServerEvents, RoomMessageData, ServerToClientEvents, SocketData, clientData, roomData, } from "./common/types/types";
 import { error } from "console";
 import { gameSetUp } from "./helpers/gameHelpers/gameSetUp";
 import { Server } from "socket.io";
 import { createServer } from 'http';
+import { roomData, RoomMessageData } from 'card-games-types/room'
+import { ServerToClientEvents, ClientToServerEvents, SocketData, InterServerEvents, CallbackResponseData } from 'card-games-types/websocket-events-interfaces'
+import { playerData } from 'card-games-types/player'
+import { BetAction } from 'card-games-types/game-actions'
+
 
 const rooms: Map<string, roomData> = new Map();
 
@@ -49,7 +53,7 @@ ioWss.on('connection', (socket) => {
         console.log(socket.id, " disconnecting... ", reason);
     })
 
-    const newUser: clientData = {
+    const newUser: playerData = {
         webSocket: socket,
         isSpectating: true,
         isReady: false,
@@ -59,7 +63,7 @@ ioWss.on('connection', (socket) => {
 
     const room: roomData = {
         owner: socket.id,
-        players: new Map<string, clientData>().set(socket.id, newUser),
+        players: new Map<string, playerData>().set(socket.id, newUser),
         deck: [],
         gameStarted: false,
         gameEnded: false

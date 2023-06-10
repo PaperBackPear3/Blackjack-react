@@ -6,7 +6,9 @@ import { ConnectionState } from './components/ConnectionStatus/ConnectionStatus'
 import { toast } from 'react-toastify';
 import { RoomsManager } from './components/RoomsManager/RoomsManager';
 import { ToastComponentContainer } from './components/Toast';
-import { Card } from './common/symbols/definition';
+import { Card } from 'card-games-types/cards'
+import { MessageData } from 'card-games-types/message';
+
 function App() {
 
 
@@ -48,7 +50,7 @@ function App() {
       setRoomId(roomId);
     });
     clientSocket.on('updatePlayerCardsEvent', onUpdatePlayerCardsEvent);
-    
+
     return () => {
 
       clientSocket.off('connect', onConnect);
@@ -63,7 +65,7 @@ function App() {
       toast.error("insert RoomID");
       return;
     }
-    clientSocket.emit('joinRoom', { roomId: friendRoomId, userId: userId }, (response) => {
+    clientSocket.emit('joinRoom', { roomId: friendRoomId, userId: userId, message: {} as MessageData }, (response) => {
       if (response.success && response.data) {
         setRoomId(response.data);
       }
@@ -73,11 +75,11 @@ function App() {
 
 
   function handleClickStartGame() {
-    clientSocket.emit('startGame', { roomId: roomId, userId: userId })
+    clientSocket.emit('startGame', { roomId: roomId, userId: userId, message: {} as MessageData })
   }
 
   function bet() {
-    clientSocket.emit('bet', { userId: userId, data: bettedvalue }, (response) => {
+    clientSocket.emit('bet', { playerId: userId, amount: bettedvalue }, (response) => {
       if (response.success && response.data) {
 
         setBettedValue(parseInt(response.data));

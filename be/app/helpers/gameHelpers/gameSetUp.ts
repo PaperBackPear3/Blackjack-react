@@ -1,5 +1,5 @@
-import { Deck } from "../../common/symbols/definition";
-import { RoomMessageData, roomData } from "../../common/types/types";
+import { Deck } from "card-games-types/cards";
+import { roomData } from "card-games-types/room";
 import { createTestDeck } from "../cardsHelper";
 
 export function gameSetUp(room: roomData): roomData {

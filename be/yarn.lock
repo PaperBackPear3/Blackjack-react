@@ -1247,6 +1247,13 @@ caniuse-lite@^1.0.30001489:
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001492.tgz#4a06861788a52b4c81fd3344573b68cc87fe062b"
   integrity sha512-2efF8SAZwgAX1FJr87KWhvuJxnGJKOnctQa8xLOskAXNXq8oiuqgl6u1kk3fFpsp3GgvzlRjiK1sl63hNtFADw==
 
+card-games-types@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/card-games-types/-/card-games-types-0.0.1.tgz#c28dbf0c993dda4ff038f7a3de41356a7eceb3b6"
+  integrity sha512-2i1fk5UBCExJHVgNhub8DqA/DqBtwGp5FxT3F/Q48e4RPhGZp977s38D0SCuBjeF1WmbExIJPy8bu8fwuZvQtQ==
+  dependencies:
+    socket.io "^4.6.2"
+
 chalk@^2.0.0:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"

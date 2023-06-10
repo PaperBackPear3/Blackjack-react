@@ -1,4 +1,5 @@
-import { Card, Deck, CardSymbol } from "../common/symbols/definition";
+import { Card, CardSymbol, Deck } from "card-games-types/cards";
+
 
 
 export function createTestDeck(): Deck {
