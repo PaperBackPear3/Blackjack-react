@@ -1,10 +1,12 @@
 import { toast } from "react-toastify";
 
-export function RoomsManager({ currentRoomId, setFrinedRoomId, isConnected, handleClickJoinRoom }: {
+export function RoomsManager({ currentRoomId, setFrinedRoomId, isConnected, handleClickJoinRoom, handleClickStartGame }: {
     currentRoomId: string,
     setFrinedRoomId: (roomId: string) => void,
     isConnected: boolean,
     handleClickJoinRoom: () => void
+    handleClickStartGame: () => void,
+
 }) {
     return (
         <>
@@ -23,6 +25,11 @@ export function RoomsManager({ currentRoomId, setFrinedRoomId, isConnected, hand
                 disabled={!isConnected}
             >
                 Join Room
+            </button>
+            <button
+                onClick={handleClickStartGame}
+                disabled={!isConnected}>
+                Start Game
             </button>
         </>
     )

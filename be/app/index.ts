@@ -1,7 +1,7 @@
 //import { BjWebSocket } from "./BjWebSocket"
 import express from "express";
 import cors from "cors";
-import { CallbackResponseData, ClientToServerEvents, GameAction, InterServerEvents, RoomMessageData, ServerToClientEvents, SocketData, clientData, roomData, } from "./common/types/types";
+import { BetAction, CallbackResponseData, ClientToServerEvents, InterServerEvents, RoomMessageData, ServerToClientEvents, SocketData, clientData, roomData, } from "./common/types/types";
 import { error } from "console";
 import { gameSetUp } from "./helpers/gameHelpers/gameSetUp";
 import { Server } from "socket.io";
@@ -51,7 +51,10 @@ ioWss.on('connection', (socket) => {
 
     const newUser: clientData = {
         webSocket: socket,
-        isSpectating: true
+        isSpectating: true,
+        isReady: false,
+        cards: [],
+        fishes: 1000
     }
 
     const room: roomData = {
@@ -109,16 +112,20 @@ ioWss.on('connection', (socket) => {
     })
 
     socket.on('startGame', function startGame(data: RoomMessageData) {
-        console.log('received: ', data.userId, " ", socket.id, ' startGame');
+        console.log('started game received: ', data.userId, " ", socket.id, ' startGame');
         var roomData = rooms.get(data.roomId)
         if (!roomData)
             throw error;
-
-        rooms.set(data.roomId, gameSetUp(roomData))
+        var RoomSetUp = gameSetUp(roomData)
+        rooms.set(data.roomId, RoomSetUp)
+        roomData.players.forEach((player, id) => {
+            player.webSocket.emit('updatePlayerCardsEvent', {
+            });
+        })
     }
     )
 
-    socket.on("bet", function bet(params: GameAction) {
+    socket.on("bet", function bet(params: BetAction) {
         return true;
     });
 

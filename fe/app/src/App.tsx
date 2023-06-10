@@ -6,7 +6,7 @@ import { ConnectionState } from './components/ConnectionStatus/ConnectionStatus'
 import { toast } from 'react-toastify';
 import { RoomsManager } from './components/RoomsManager/RoomsManager';
 import { ToastComponentContainer } from './components/Toast';
-import { MessageData } from './common/types/socketIoTypes';
+import { Card } from './common/symbols/definition';
 function App() {
 
 
@@ -18,6 +18,7 @@ function App() {
   const [lastBet, setLastBet] = useState<number>(0);
   const [skipped, setSkipped] = useState<boolean>(false);
   const [isplaying, setIsPlaying] = useState<boolean>(false);
+  const [cardsInHand, setCardsInHand] = useState<Card[]>([]);
 
 
   useEffect(() => {
@@ -31,8 +32,13 @@ function App() {
       setIsConnected(false);
     }
 
-    function onRoomEvent(roomEvent: MessageData) {
-      toast(roomEvent.message, { type: roomEvent.success ? 'success' : 'error' });
+    function onUpdatePlayerCardsEvent(event) {
+      if ()
+        toast(roomEvent.message, { type: roomEvent.success ? 'success' : 'error' });
+
+      setCardsInHand(roomEvent.data)
+
+
     }
 
     clientSocket.on('connect', onConnect,);
@@ -41,14 +47,13 @@ function App() {
     clientSocket.on('clientRoomId', (roomId: string) => {
       setRoomId(roomId);
     });
-    clientSocket.on('roomEvent', onRoomEvent);
-
+    clientSocket.on('updatePlayerCardsEvent', onUpdatePlayerCardsEvent);
+    
     return () => {
+
       clientSocket.off('connect', onConnect);
       clientSocket.off('disconnect', onDisconnect);
       clientSocket.off('clientRoomId');
-      clientSocket.off('roomEvent', onRoomEvent);
-
     };
   }, []);
 
@@ -67,6 +72,10 @@ function App() {
   }
 
 
+  function handleClickStartGame() {
+    clientSocket.emit('startGame', { roomId: roomId, userId: userId })
+  }
+
   function bet() {
     clientSocket.emit('bet', { userId: userId, data: bettedvalue }, (response) => {
       if (response.success && response.data) {
@@ -84,12 +93,12 @@ function App() {
         <ConnectionState isConnected={isConnected} />
         <ConnectionManager />
         <br></br>
-        <RoomsManager currentRoomId={roomId} setFrinedRoomId={setFrinedRoomId} isConnected={isConnected} handleClickJoinRoom={handleClickJoinRoom} />
-        <ToastComponentContainer />
+        <RoomsManager currentRoomId={roomId} setFrinedRoomId={setFrinedRoomId} isConnected={isConnected} handleClickJoinRoom={handleClickJoinRoom} handleClickStartGame={handleClickStartGame} />
       </div>
       <div className='body'>
 
       </div>
+      <ToastComponentContainer />
     </>
   );
 }

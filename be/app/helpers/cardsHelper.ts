@@ -1,8 +1,8 @@
-import { Card, Deck, Symbol } from "../common/symbols/definition";
+import { Card, Deck, CardSymbol } from "../common/symbols/definition";
 
 
 export function createTestDeck(): Deck {
-    var symbols: Symbol[] = [
+    var symbols: CardSymbol[] = [
         { name: 'Heart', color: 'red', image: '' },
         { name: 'Spade', color: 'black', image: '' },
         { name: 'Diamond', color: 'red', image: '' },
@@ -11,7 +11,7 @@ export function createTestDeck(): Deck {
     return CreateDeck(symbols, 52);
 }
 
-export function CreateDeck(symbols: Symbol[], cardsQuantity: number): Deck {
+export function CreateDeck(symbols: CardSymbol[], cardsQuantity: number): Deck {
     const CARDS_PER_SYMBOL = cardsQuantity / symbols.length
     var cards: Card[] = [];
     var deck: Deck = {} as Deck
