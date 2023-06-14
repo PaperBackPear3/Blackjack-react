@@ -34,13 +34,9 @@ function App() {
       setIsConnected(false);
     }
 
-    function onUpdatePlayerCardsEvent(event) {
-      if ()
-        toast(roomEvent.message, { type: roomEvent.success ? 'success' : 'error' });
-
-      setCardsInHand(roomEvent.data)
-
-
+    function onUpdatePlayerCardsEvent(data: Card[]) {
+      console.log('updatePlayerCardsEvent', data);
+      setCardsInHand(data);
     }
 
     clientSocket.on('connect', onConnect,);
@@ -56,6 +52,7 @@ function App() {
       clientSocket.off('connect', onConnect);
       clientSocket.off('disconnect', onDisconnect);
       clientSocket.off('clientRoomId');
+      clientSocket.off('updatePlayerCardsEvent', onUpdatePlayerCardsEvent);
     };
   }, []);
 
@@ -98,7 +95,22 @@ function App() {
         <RoomsManager currentRoomId={roomId} setFrinedRoomId={setFrinedRoomId} isConnected={isConnected} handleClickJoinRoom={handleClickJoinRoom} handleClickStartGame={handleClickStartGame} />
       </div>
       <div className='body'>
-
+        <div className='cards-container'>
+          {cardsInHand && cardsInHand.length > 0 && cardsInHand.map((card) => {
+            return (
+              <div className='card'>
+                <p>{card.value}</p>
+                <p>{card.altText}</p>
+                <img src={card.image} alt={card.altText} />
+              </div>
+            )
+          }
+          )}
+        </div>
+        <div className='action-container'>
+          <button onClick={bet}>Bet</button>
+          <button onClick={() => { setSkipped(!skipped) }}>Skip</button>
+        </div>
       </div>
       <ToastComponentContainer />
     </>

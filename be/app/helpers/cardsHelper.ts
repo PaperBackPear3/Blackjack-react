@@ -24,3 +24,9 @@ export function CreateDeck(symbols: CardSymbol[], cardsQuantity: number): Deck {
     deck.cards = cards;
     return deck;
 }
+
+export function turn(deck: Deck, cardsQuantity: number): { updatedDeck: Deck, playerCards: Card[] } {
+    const playerCards = deck.cards.splice(0, cardsQuantity)
+    const updatedDeck = deck
+    return { updatedDeck: updatedDeck, playerCards: playerCards };
+}

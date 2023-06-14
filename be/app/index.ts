@@ -9,6 +9,7 @@ import { roomData, RoomMessageData } from 'card-games-types/room'
 import { ServerToClientEvents, ClientToServerEvents, SocketData, InterServerEvents, CallbackResponseData } from 'card-games-types/websocket-events-interfaces'
 import { playerData } from 'card-games-types/player'
 import { BetAction } from 'card-games-types/game-actions'
+import { createTestDeck, turn } from "./helpers/cardsHelper";
 
 
 const rooms: Map<string, roomData> = new Map();
@@ -64,7 +65,7 @@ ioWss.on('connection', (socket) => {
     const room: roomData = {
         owner: socket.id,
         players: new Map<string, playerData>().set(socket.id, newUser),
-        deck: [],
+        deck: createTestDeck(),
         gameStarted: false,
         gameEnded: false
     }
@@ -123,8 +124,9 @@ ioWss.on('connection', (socket) => {
         var RoomSetUp = gameSetUp(roomData)
         rooms.set(data.roomId, RoomSetUp)
         roomData.players.forEach((player, id) => {
-            player.webSocket.emit('updatePlayerCardsEvent', {
-            });
+            var nextTurn = turn(RoomSetUp.deck, 2)
+            player.cards.push(...nextTurn.playerCards)
+            player.webSocket.emit('updatePlayerCardsEvent', { data: nextTurn.playerCards });
         })
     }
     )

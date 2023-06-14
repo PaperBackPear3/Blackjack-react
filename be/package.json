@@ -9,7 +9,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "card-games-types": "^0.0.1",
+    "card-games-types": "0.0.2",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
