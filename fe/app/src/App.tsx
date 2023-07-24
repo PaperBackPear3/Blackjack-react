@@ -95,7 +95,7 @@ function App() {
         <ConnectionManager />
       </div>
       <div className='body'>
-        <RoomsManager currentRoomId={roomId} setFrinedRoomId={setFrinedRoomId} isConnected={isConnected} handleClickJoinRoom={handleClickJoinRoom} handleClickStartGame={handleClickStartGame} />
+        <RoomsManager currentRoomId={roomId} setFrinedRoomId={setFrinedRoomId} isConnected={isConnected} handleClickJoinRoom={handleClickJoinRoom} />
         <StartGame onClickStartGame={handleClickStartGame} isDisabled={!isConnected} />
         <div className='cards-container'>
           {cardsInHand.map((card) => {
