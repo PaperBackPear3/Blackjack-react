@@ -4,10 +4,12 @@ import { clientSocket } from './websocket/clientSocket';
 import { ConnectionManager } from './components/ConnectionManager/ConnectionManaget';
 import { ConnectionState } from './components/ConnectionStatus/ConnectionStatus';
 import { toast } from 'react-toastify';
-import { RoomsManager } from './components/RoomsManager/RoomsManager';
+
 import { ToastComponentContainer } from './components/Toast';
 import { Card } from 'card-games-types/cards'
 import { MessageData } from 'card-games-types/message';
+import StartGame from './components/StartGame/StartGame';
+import RoomsManager from './components/RoomsManager/RoomsManager';
 
 function App() {
 
@@ -91,12 +93,12 @@ function App() {
       <div className='header'>
         <ConnectionState isConnected={isConnected} />
         <ConnectionManager />
-        <br></br>
-        <RoomsManager currentRoomId={roomId} setFrinedRoomId={setFrinedRoomId} isConnected={isConnected} handleClickJoinRoom={handleClickJoinRoom} handleClickStartGame={handleClickStartGame} />
       </div>
       <div className='body'>
+        <RoomsManager currentRoomId={roomId} setFrinedRoomId={setFrinedRoomId} isConnected={isConnected} handleClickJoinRoom={handleClickJoinRoom} handleClickStartGame={handleClickStartGame} />
+        <StartGame onClickStartGame={handleClickStartGame} isDisabled={!isConnected} />
         <div className='cards-container'>
-          {cardsInHand && cardsInHand.length > 0 && cardsInHand.map((card) => {
+          {cardsInHand.map((card) => {
             return (
               <div className='card'>
                 <p>{card.value}</p>
